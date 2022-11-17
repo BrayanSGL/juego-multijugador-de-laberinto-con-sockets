@@ -1,11 +1,12 @@
 # game setup
 
 # screen
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-SCREEN_TITLE = "Laberinto"
+WIDTH = 800
+HEIGHT = 600
+TITLE = "Laberinto"
 FPS = 60
-TITLE_SIZE = 50
+TILE_SIZE = 50
+BLACK = (0, 0, 0)
 
 # Map is a matrix of 12x12
 WORLD_MAP = [
