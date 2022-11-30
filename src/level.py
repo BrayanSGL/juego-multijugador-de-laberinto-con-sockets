@@ -1,57 +1,25 @@
 import pygame
-from settings import *
-from tile import Tile
+from pygame.locals import *
+from settings import TILE_SIZE, WORLD_MAP
+import player
 
 class Level:
-    def __init__(self):
-        # Sprite groups setup
-        self.p2Pos = None
-        self.string = None
-        self.visible_sprite = YSortCameraGroup()
-        self.obstacle_sprite = pygame.sprite.Group()
-        # Sockets part self.net = Network()
-        self.p1 = []
-
-        # Sprite group
-        self.create_map()
+    def __init__(self, screen):
+        self.screen = screen
+        self.wall_list = pygame.sprite.Group()
+        self.image_map = pygame.transform.scale(pygame.image.load('assets/map/wall.png'), (TILE_SIZE, TILE_SIZE))
+        self.image_chest = pygame.transform.scale(pygame.image.load('assets/map/chest.png'), (TILE_SIZE, TILE_SIZE))
+        
     
-    def create_map(self):
-        # Create map
+        #self.draw_map()
+
+
+    def draw_map(self):
         for row_index, row in enumerate(WORLD_MAP):
-            for column_index, col in enumerate(row):
-                x = column_index * TILE_SIZE
-                y = row_index * TILE_SIZE
-                if col == 'X':
-                    Tile((x, y),[self.visible_sprite, self.obstacle_sprite])
-                    pass
-                elif col == 'P':
-                    # Create player
-                    pass
-                elif col == 'C':
-                    # Create chest
-                    pass
-
-    def read_pos(self, string):
-        string = string.split(",") # string = [x, y]
-        return int(string[0]), int(string[1]) #nos regresa la posicion del jugador 
-
-    def make_pos(self, tuple):
-        return str(tuple[0]) + "," + str(tuple[1]) #nos regresa la posicion del jugador en string
-
-    def run(self):
-        # Draw map
-        #self.visible_sprite.draw(self.player1, self.player2)
-        #self.visible_sprite.custome_draw(self.screen)
-        pass
-
-
-class YSortCameraGroup(pygame.sprite.Group):
-    def __init__(self):
-        #General setup
-        super().__init__()
-
-        #Get the display surface
-        self.display_surface = pygame.display.get_surface()
-        self.half_width = self.display_surface.get_size()[0] // 2
-        self.half_height = self.display_surface.get_size()[1] // 2
-        self.offset = pygame.math.Vector2()
+            for col_index, tile in enumerate(row):
+                if tile == 'X':
+                    self.screen.blit(self.image_map, (col_index * TILE_SIZE, row_index * TILE_SIZE))
+                elif tile == 'C':
+                    self.screen.blit(self.image_chest, (col_index * TILE_SIZE, row_index * TILE_SIZE))
+                elif tile == 'P':
+                    self.screen.blit(self.image_chest, (col_index * TILE_SIZE, row_index * TILE_SIZE))
