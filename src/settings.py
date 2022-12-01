@@ -11,7 +11,7 @@ BLACK = (0, 0, 0)
 # Map is a matrix of 12x12
 WORLD_MAP = [
     ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'P', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
+    ['X', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
     ['X', ' ', 'X', ' ', 'X', ' ', 'X', ' ', 'X', 'X', 'X', 'X'],
     ['X', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
     ['X', ' ', ' ', ' ', 'X', 'X', 'X', 'X', ' ', 'X', 'X', 'X'],
@@ -23,3 +23,9 @@ WORLD_MAP = [
     ['X', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
     ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X']
 ]
+
+FREE_COORDINATES = []
+for i in range(len(WORLD_MAP)):
+    for j in range(len(WORLD_MAP[i])):
+        if WORLD_MAP[i][j] != 'X' and WORLD_MAP[i][j] != 'C':
+            FREE_COORDINATES.append((i, j))
