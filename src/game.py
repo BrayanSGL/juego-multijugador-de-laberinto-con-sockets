@@ -106,27 +106,19 @@ class Game:
         while is_running:
             clock.tick(FPS)
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.network.send('q')
+                if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
                     is_running = False
-                if event.type == pygame.K_ESCAPE:
-                    self.network.send('q')
-                    is_running = False
-
-            keys = pygame.key.get_pressed()
-            # Player movement with WASD or arrow keys
-            if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-                direction_str = direction[2]
-            if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-                direction_str = direction[3]
-            if keys[pygame.K_w] or keys[pygame.K_UP]:
-                direction_str = direction[0]
-            if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-                direction_str = direction[1]
-
-            # Que se mueva el player con espacio solo una vez y no se quede presionado
-            if keys[pygame.K_SPACE]:
-                self.player.move(direction_str)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        direction_str = 'up'
+                    elif event.key == pygame.K_DOWN:
+                        direction_str = 'down'
+                    elif event.key == pygame.K_LEFT:
+                        direction_str = 'left'
+                    elif event.key == pygame.K_RIGHT:
+                        direction_str = 'right'
+                    elif event.key == pygame.K_SPACE:
+                        self.player.move(direction_str)
 
             self.send_data()
             # Update canvas
