@@ -12,7 +12,7 @@ host = socket.gethostname()
 ip = socket.gethostbyname(host)
 print(ip, type(ip))
 
-server = 'localhost'
+server = '192.168.1.64'
 port = 9999
 
 server_ip = socket.gethostbyname(server)
@@ -23,7 +23,7 @@ try:
 except socket.error as e:
     print(str(e))
 
-serversocket.listen()
+serversocket.listen(2)
 print("Waiting for a connection, Server Started")
 
 def threaded_client(connection):
@@ -35,6 +35,9 @@ def threaded_client(connection):
             if data == 'q':
                 print('Disconnected')
                 break
+            elif data == 'i':
+                print('game started')
+                connection.sendall(str.encode('S'))
             if not data:
                 connection.sendall(str.encode('Goodbye'))
                 break

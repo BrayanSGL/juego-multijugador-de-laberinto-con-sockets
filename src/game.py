@@ -41,7 +41,7 @@ class Game:
             FREE_COORDINATES[random.randint(0, len(FREE_COORDINATES) - 1)])
         self.canvas = Canvas(self.width, self.height, TITLE)
 
-    def intro(self, clock):     
+    def intro(self, clock):
         pygame.init()
         is_running = True
         # fonts
@@ -59,7 +59,16 @@ class Game:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_i]:
                 is_running = False
-                self.network.send('i')
+                if self.network.send('i') == 'S':
+                    print('S')
+                    # Cuenta regresiva de 15 segundos
+                    for i in range(15, 0, -1):
+                        self.canvas.draw_background()
+                        self.player.draw(self.canvas.get_canvas(), 'down')
+                        self.canvas.draw_text(medium, str(
+                            i), (self.width // 2, self.height // 2), (255, 255, 255))
+                        self.canvas.update()
+                        pygame.time.delay(1000)
                 return True
             if keys[pygame.K_q]:
                 is_running = False
@@ -73,7 +82,6 @@ class Game:
             text = medium.render('Press "q" to quit', 1, (255, 255, 255))
             self.canvas.get_canvas().blit(text, (self.width // 2 - text.get_width() // 2, 400))
             self.canvas.update()
-        
 
     def run(self):
         direction = ['up', 'down', 'left', 'right']
@@ -105,7 +113,7 @@ class Game:
             # Que se mueva el player con espacio solo una vez y no se quede presionado
             if keys[pygame.K_SPACE]:
                 self.player.move(direction_str)
-            
+
             self.send_data()
             # Update canvas
             self.canvas.draw_background()
