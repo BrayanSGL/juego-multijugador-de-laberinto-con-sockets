@@ -65,7 +65,6 @@ class Game:
                 server_data = server_data[0].split(',') # ['id', 'playing']
                 print(server_data)
                 if server_data[1] == 'playing':  # cambiar
-                    print('S')
                     # Cuenta regresiva de 15 segundos
                     for i in range(15, 0, -1):
                         self.canvas.draw_background()
@@ -76,7 +75,10 @@ class Game:
                             f'Time to start {i} seconds', 1, (255, 255, 255))
                         self.canvas.get_canvas().blit(text, (self.width // 2 - text.get_width() // 2, 300))
                         self.canvas.update()
+                        if keys[pygame.K_a]:
+                            print('a')
                         pygame.time.delay(1000)
+
                 return True
             if keys[pygame.K_q]:
                 is_running = False
