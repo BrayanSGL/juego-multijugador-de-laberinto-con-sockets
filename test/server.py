@@ -1,4 +1,5 @@
 import socket
+from queue import Queue
 from _thread import *
 import sys
 
@@ -26,7 +27,7 @@ except socket.error as e:
 serversocket.listen(2)
 print("Waiting for a connection, Server Started")
 
-def threaded_client(connection):
+def threaded_client(connection,cola):
     connection.send(str.encode('Welcome to the server'))
     while True:
         try:
@@ -35,7 +36,8 @@ def threaded_client(connection):
             if reply == 'q':
                 print('Disconnected')
                 break
-            elif reply == 'i':
+            elif reply == 'i' or cola == 1:
+                cola.put(1)
                 print('game started')
                 connection.sendall(str.encode('S'))
             if not data:
@@ -57,8 +59,8 @@ def threaded_client(connection):
     #         break
     #     connection.sendall(str.encode(reply))
     # connection.close()
-
+cola = Queue()
 while True:
     clientsocket, address = serversocket.accept()
     print("Connected to: " + address[0] + ":" + str(address[1]))
-    start_new_thread(threaded_client, (clientsocket,))
+    start_new_thread(threaded_client, (clientsocket,cola))
