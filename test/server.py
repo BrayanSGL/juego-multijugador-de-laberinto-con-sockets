@@ -59,7 +59,12 @@ def threaded_client(connection):
                 break
             else:
                 print('Received: ' + reply)
-                connection.sendall(str.encode(reply))
+                state = reply.split(':')[0].split(',')[1]
+                if state == 'playing' or start_clock:
+                    start_clock = True
+                    connection.sendall(str.encode('S'))
+                else:
+                    connection.sendall(str.encode(reply))
         except:
             break
 

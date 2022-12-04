@@ -57,10 +57,13 @@ class Game:
                     is_running = False
 
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_i]:
+            if keys[pygame.K_i] or self.player.status == 'playing':
                 self.player.status = 'playing'
                 is_running = False
-                if self.send_data() == 'S':  # cambiar
+                server_data = self.send_data() # 'id,playing:x,y' estraer playing
+                server_data = server_data.split(':') # ['id,playing', 'x,y']
+                server_data = server_data[0].split(',') # ['id', 'playing']
+                if server_data[1] == 'playing':  # cambiar
                     print('S')
                     # Cuenta regresiva de 15 segundos
                     for i in range(15, 0, -1):
@@ -78,7 +81,8 @@ class Game:
                 is_running = False
                 return False
             
-            self.send_data()
+            if self.send_data() == 'S':
+                self.player.status = 'playing'
 
             self.canvas.draw_background()
             text = big.render('Welcome to the game', 1, (255, 0, 0))
