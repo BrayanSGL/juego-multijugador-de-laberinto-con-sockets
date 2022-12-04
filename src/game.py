@@ -59,16 +59,17 @@ class Game:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_i]:
                 is_running = False
-                if self.network.send('i') == 'S':
-                    print('S')
-                    # Cuenta regresiva de 15 segundos
-                    for i in range(15, 0, -1):
-                        self.canvas.draw_background()
-                        self.player.draw(self.canvas.get_canvas(), 'down')
-                        self.canvas.draw_text(medium, str(
-                            i), (self.width // 2, self.height // 2), (255, 255, 255))
-                        self.canvas.update()
-                        pygame.time.delay(1000)
+                # if self.network.send('i') == 'S':
+                #     print('S')
+                #     # Cuenta regresiva de 15 segundos
+                #     for i in range(15, 0, -1):
+                #         self.canvas.draw_background()
+                #         self.player.draw(self.canvas.get_canvas(), 'down')
+                #         self.canvas.draw_text(medium, str(
+                #             i), (self.width // 2, self.height // 2), (255, 255, 255))
+                #         self.canvas.update()
+                #         pygame.time.delay(1000)
+                print(self.network.send('i'))
                 return True
             if keys[pygame.K_q]:
                 is_running = False

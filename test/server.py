@@ -32,10 +32,10 @@ def threaded_client(connection):
         try:
             data = connection.recv(2048)
             reply = data.decode('utf-8')
-            if data == 'q':
+            if reply == 'q':
                 print('Disconnected')
                 break
-            elif data == 'i':
+            elif reply == 'i':
                 print('game started')
                 connection.sendall(str.encode('S'))
             if not data:
