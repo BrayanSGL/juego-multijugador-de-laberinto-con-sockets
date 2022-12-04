@@ -42,7 +42,6 @@ class Game:
         self.canvas = Canvas(self.width, self.height, TITLE)
 
     def intro(self, clock):
-        self.network.client.send(str.encode('intro'))
         pygame.init()
         is_running = True
         # fonts
@@ -65,9 +64,11 @@ class Game:
                     # Cuenta regresiva de 15 segundos
                     for i in range(15, 0, -1):
                         self.canvas.draw_background()
-                        text = big.render('Welcome to the game', 1, (255, 0, 0))
+                        text = big.render(
+                            'Welcome to the game', 1, (255, 0, 0))
                         self.canvas.get_canvas().blit(text, (self.width // 2 - text.get_width() // 2, 200))
-                        text = little.render(f'Time to start {i} seconds', 1, (255, 255, 255))
+                        text = little.render(
+                            f'Time to start {i} seconds', 1, (255, 255, 255))
                         self.canvas.get_canvas().blit(text, (self.width // 2 - text.get_width() // 2, 300))
                         self.canvas.update()
                         pygame.time.delay(1000)
@@ -84,7 +85,6 @@ class Game:
             text = medium.render('Press "q" to quit', 1, (255, 255, 255))
             self.canvas.get_canvas().blit(text, (self.width // 2 - text.get_width() // 2, 400))
             self.canvas.update()
-            cola = self.network.client.recv(2048).decode()
 
     def run(self):
         direction = ['up', 'down', 'left', 'right']
