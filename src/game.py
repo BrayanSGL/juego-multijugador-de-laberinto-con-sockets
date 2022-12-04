@@ -41,12 +41,45 @@ class Game:
             FREE_COORDINATES[random.randint(0, len(FREE_COORDINATES) - 1)])
         self.canvas = Canvas(self.width, self.height, TITLE)
 
+    def intro(self, clock):
+        pygame.init()
+        is_running = True
+        # fonts
+        little = pygame.font.SysFont('comicsansms', 20)
+        medium = pygame.font.SysFont('comicsansms', 40)
+        big = pygame.font.SysFont('comicsansms', 55)
+        while is_running:
+            clock.tick(FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    is_running = False
+                if event.type == pygame.K_ESCAPE:
+                    is_running = False
+
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_i]:
+                is_running = False
+                return True
+            if keys[pygame.K_q]:
+                is_running = False
+                return False
+
+            self.canvas.draw_background()
+            text = big.render('Welcome to the game', 1, (255, 0, 0))
+            self.canvas.get_canvas().blit(text, (self.width // 2 - text.get_width() // 2, 200))
+            text = medium.render('Press "i" to play', 1, (255, 255, 255))
+            self.canvas.get_canvas().blit(text, (self.width // 2 - text.get_width() // 2, 300))
+            text = medium.render('Press "q" to quit', 1, (255, 255, 255))
+            self.canvas.get_canvas().blit(text, (self.width // 2 - text.get_width() // 2, 400))
+            self.canvas.update()
+        
+
     def run(self):
         direction = ['up', 'down', 'left', 'right']
         direction_str = direction[random.randint(0, 3)]
         print(self.width, self.height)
         clock = pygame.time.Clock()
-        is_running = True
+        is_running = self.intro(clock)
         while is_running:
             clock.tick(FPS)
             for event in pygame.event.get():
@@ -65,12 +98,11 @@ class Game:
                 direction_str = direction[0]
             if keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 direction_str = direction[1]
-            
-            #Que se mueva el player con espacio solo una vez y no se quede presionado
+
+            # Que se mueva el player con espacio solo una vez y no se quede presionado
             if keys[pygame.K_SPACE]:
                 self.player.move(direction_str)
-                #self.send_data()
-
+                # self.send_data()
 
             # Update canvas
             self.canvas.draw_background()
@@ -88,7 +120,7 @@ class Game:
             d = data.split(":")[1].split(",")
             return int(d[0]), int(d[1])
         except:
-            return 0,0
+            return 0, 0
 
 
 class Canvas:
