@@ -8,19 +8,28 @@ class Player():
     width = height = TILE_SIZE
 
     def __init__(self, start_pos):
-        self.x = start_pos[0]
-        self.y = start_pos[1]
-        self.image ={
-            'up': pygame.transform.scale(pygame.image.load('assets/player/back.png'), (TILE_SIZE,TILE_SIZE)),
-            'down': pygame.transform.scale(pygame.image.load('assets/player/front.png'), (TILE_SIZE,TILE_SIZE)),
-            'left': pygame.transform.scale(pygame.image.load('assets/player/left.png'), (TILE_SIZE,TILE_SIZE)),
-            'right': pygame.transform.scale(pygame.image.load('assets/player/right.png'), (TILE_SIZE,TILE_SIZE))
+        self.x = start_pos[0] * TILE_SIZE  # revisar + TILE_SIZE // 2
+        self.y = start_pos[1] * TILE_SIZE + 10  # +10 to make it look better
+        self.image = {
+            'up': pygame.transform.scale(pygame.image.load('assets/player/back.png'), (TILE_SIZE, TILE_SIZE)),
+            'down': pygame.transform.scale(pygame.image.load('assets/player/front.png'), (TILE_SIZE, TILE_SIZE)),
+            'left': pygame.transform.scale(pygame.image.load('assets/player/left.png'), (TILE_SIZE, TILE_SIZE)),
+            'right': pygame.transform.scale(pygame.image.load('assets/player/right.png'), (TILE_SIZE, TILE_SIZE))
         }
         print(self.x, self.y)
 
     def draw(self, screen, direction):
         screen.blit(self.image[direction], (self.x, self.y))
 
+    def move(self, direction):
+        if direction == 'up':
+            self.y -= self.height
+        elif direction == 'down':
+            self.y += self.height
+        elif direction == 'left':
+            self.x -= self.width
+        elif direction == 'right':
+            self.x += self.width
 
 
 class Game:
@@ -33,9 +42,9 @@ class Game:
         self.canvas = Canvas(self.width, self.height, TITLE)
 
     def run(self):
-        print(self.width, self.height)
         direction = ['up', 'down', 'left', 'right']
-        direction_str = 'down'
+        direction_str = direction[random.randint(0, 3)]
+        print(self.width, self.height)
         clock = pygame.time.Clock()
         is_running = True
         while is_running:
@@ -50,27 +59,36 @@ class Game:
             # Player movement with WASD or arrow keys
             if keys[pygame.K_a] or keys[pygame.K_LEFT]:
                 direction_str = direction[2]
-                self.player.x -= 1
             if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                 direction_str = direction[3]
-                self.player.x += 1
             if keys[pygame.K_w] or keys[pygame.K_UP]:
                 direction_str = direction[0]
-                self.player.y -= 1
             if keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 direction_str = direction[1]
-                self.player.y += 1
+            
+            #Que se mueva el player con espacio solo una vez y no se quede presionado
+            if keys[pygame.K_SPACE]:
+                self.player.move(direction_str)
+                #self.send_data()
 
 
             # Update canvas
             self.canvas.draw_background()
-            self.player.draw(self.canvas.get_canvas(),direction_str)
+            self.player.draw(self.canvas.get_canvas(), direction_str)
             self.canvas.update()
 
         pygame.quit()
 
     def send_data(self):
         pass
+
+    @staticmethod
+    def parse_data(data):
+        try:
+            d = data.split(":")[1].split(",")
+            return int(d[0]), int(d[1])
+        except:
+            return 0,0
 
 
 class Canvas:
