@@ -16,7 +16,7 @@ class Player():
             'left': pygame.transform.scale(pygame.image.load('assets/player/left.png'), (TILE_SIZE, TILE_SIZE)),
             'right': pygame.transform.scale(pygame.image.load('assets/player/right.png'), (TILE_SIZE, TILE_SIZE))
         }
-        print(self.x, self.y)
+        self.status = 'intro'  # // intro, playing, win, lose
 
     def draw(self, screen, direction):
         screen.blit(self.image[direction], (self.x, self.y))
@@ -49,7 +49,7 @@ class Game:
         medium = pygame.font.SysFont('comicsansms', 40)
         big = pygame.font.SysFont('comicsansms', 55)
         while is_running:
-            clock.tick(FPS)
+            clock.tick(15)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     is_running = False
@@ -58,8 +58,9 @@ class Game:
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_i]:
+                self.player.status = 'playing'
                 is_running = False
-                if self.network.send('i') == 'S' or cola == 'S':
+                if self.send_data() == 'S':  # cambiar
                     print('S')
                     # Cuenta regresiva de 15 segundos
                     for i in range(15, 0, -1):
@@ -76,6 +77,8 @@ class Game:
             if keys[pygame.K_q]:
                 is_running = False
                 return False
+            
+            self.send_data()
 
             self.canvas.draw_background()
             text = big.render('Welcome to the game', 1, (255, 0, 0))
@@ -126,7 +129,9 @@ class Game:
         pygame.quit()
 
     def send_data(self):
-        pass
+        data = str(self.network.id) + ',' + str(self.player.status) + \
+            ':' + str(self.player.x) + ',' + str(self.player.y)
+        return self.network.send(data)
 
     @staticmethod
     def parse_data(data):
