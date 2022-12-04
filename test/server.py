@@ -23,18 +23,37 @@ try:
 except socket.error as e:
     print(str(e))
 
-serversocket.listen(2)
+serversocket.listen()
 print("Waiting for a connection, Server Started")
 
 def threaded_client(connection):
     connection.send(str.encode('Welcome to the server'))
     while True:
-        data = connection.recv(2048)
-        reply = 'Server output: ' + data.decode('utf-8')
-        if not data:
+        try:
+            data = connection.recv(2048)
+            reply = data.decode('utf-8')
+            if data == 'q':
+                print('Disconnected')
+                break
+            if not data:
+                connection.sendall(str.encode('Goodbye'))
+                break
+            else:
+                print('Received: ' + reply)
+                connection.sendall(str.encode(reply))
+        except:
             break
-        connection.sendall(str.encode(reply))
+    
+    print("Lost connection")
     connection.close()
+
+
+    #     data = connection.recv(2048)
+    #     reply = 'Server output: ' + data.decode('utf-8')
+    #     if not data:
+    #         break
+    #     connection.sendall(str.encode(reply))
+    # connection.close()
 
 while True:
     clientsocket, address = serversocket.accept()

@@ -34,14 +34,14 @@ class Player():
 
 class Game:
     def __init__(self, width, height):
-        #self.network = Network()
+        self.network = Network()
         self.width = width
         self.height = height
         self.player = Player(
             FREE_COORDINATES[random.randint(0, len(FREE_COORDINATES) - 1)])
         self.canvas = Canvas(self.width, self.height, TITLE)
 
-    def intro(self, clock):
+    def intro(self, clock):     
         pygame.init()
         is_running = True
         # fonts
@@ -59,6 +59,7 @@ class Game:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_i]:
                 is_running = False
+                self.network.send('i')
                 return True
             if keys[pygame.K_q]:
                 is_running = False
@@ -84,8 +85,10 @@ class Game:
             clock.tick(FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.network.send('q')
                     is_running = False
                 if event.type == pygame.K_ESCAPE:
+                    self.network.send('q')
                     is_running = False
 
             keys = pygame.key.get_pressed()
@@ -102,8 +105,8 @@ class Game:
             # Que se mueva el player con espacio solo una vez y no se quede presionado
             if keys[pygame.K_SPACE]:
                 self.player.move(direction_str)
-                # self.send_data()
-
+            
+            self.send_data()
             # Update canvas
             self.canvas.draw_background()
             self.player.draw(self.canvas.get_canvas(), direction_str)
