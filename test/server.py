@@ -43,18 +43,6 @@ def threaded_client(connection):
         try:
             data = connection.recv(2048)
             reply = data.decode('utf-8')
-            if reply == 'q':
-                print('Disconnected')
-                break
-
-            #####
-
-            # elif reply == 'i' or start_clock:
-            #     start_clock = True
-            #     print('game started')
-            #     connection.sendall(str.encode('S'))
-
-            ####
             if not data:
                 connection.sendall(str.encode('Goodbye'))
                 break
@@ -85,6 +73,4 @@ while True:
     print("Connected to: " + address[0] + ":" + str(address[1]))
     start_new_thread(threaded_client, (clientsocket,))
     # cerrar el socket cuando se cierre el juego
-    if users_disconnect == int(current_id)+1:
-        serversocket.close()
-        break
+

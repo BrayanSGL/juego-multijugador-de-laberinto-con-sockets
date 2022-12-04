@@ -8,8 +8,8 @@ class Player():
     width = height = TILE_SIZE
 
     def __init__(self, start_pos):
-        self.x = start_pos[0] * TILE_SIZE  # revisar + TILE_SIZE // 2
-        self.y = start_pos[1] * TILE_SIZE + 10  # +10 to make it look better
+        self.x = start_pos[0]  # revisar + TILE_SIZE // 2
+        self.y = start_pos[1]  # +10 to make it look better
         self.image = {
             'up': pygame.transform.scale(pygame.image.load('assets/player/back.png'), (TILE_SIZE, TILE_SIZE)),
             'down': pygame.transform.scale(pygame.image.load('assets/player/front.png'), (TILE_SIZE, TILE_SIZE)),
@@ -19,17 +19,18 @@ class Player():
         self.status = 'intro'  # // intro, playing, win, lose
 
     def draw(self, screen, direction):
-        screen.blit(self.image[direction], (self.x, self.y))
+        screen.blit(self.image[direction],
+                    (self.x*TILE_SIZE, self.y*TILE_SIZE))
 
     def move(self, direction):
         if direction == 'up':
-            self.y -= self.height
+            self.y -= 1
         elif direction == 'down':
-            self.y += self.height
+            self.y += 1
         elif direction == 'left':
-            self.x -= self.width
+            self.x -= 1
         elif direction == 'right':
-            self.x += self.width
+            self.x += 1
 
 
 class Game:
@@ -60,9 +61,9 @@ class Game:
             if keys[pygame.K_i] or self.player.status == 'playing':
                 self.player.status = 'playing'
                 is_running = False
-                server_data = self.send_data() # 'id,playing:x,y' estraer playing
-                server_data = server_data.split(':') # ['id,playing', 'x,y']
-                server_data = server_data[0].split(',') # ['id', 'playing']
+                server_data = self.send_data()  # 'id,playing:x,y' estraer playing
+                server_data = server_data.split(':')  # ['id,playing', 'x,y']
+                server_data = server_data[0].split(',')  # ['id', 'playing']
                 print(server_data)
                 if server_data[1] == 'playing':  # cambiar
                     # Cuenta regresiva de 15 segundos
@@ -83,7 +84,7 @@ class Game:
             if keys[pygame.K_q]:
                 is_running = False
                 return False
-            
+
             if self.send_data() == 'p,playing:0,0':
                 self.player.status = 'playing'
 
