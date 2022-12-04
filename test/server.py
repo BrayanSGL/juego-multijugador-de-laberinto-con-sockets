@@ -62,7 +62,7 @@ def threaded_client(connection):
                 state = reply.split(':')[0].split(',')[1]
                 if state == 'playing' or start_clock:
                     start_clock = True
-                    connection.sendall(str.encode('S'))
+                    connection.sendall(str.encode('p,playing:0,0'))
                 else:
                     connection.sendall(str.encode(reply))
         except:

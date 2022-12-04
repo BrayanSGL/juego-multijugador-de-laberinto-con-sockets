@@ -63,6 +63,7 @@ class Game:
                 server_data = self.send_data() # 'id,playing:x,y' estraer playing
                 server_data = server_data.split(':') # ['id,playing', 'x,y']
                 server_data = server_data[0].split(',') # ['id', 'playing']
+                print(server_data)
                 if server_data[1] == 'playing':  # cambiar
                     print('S')
                     # Cuenta regresiva de 15 segundos
@@ -81,7 +82,7 @@ class Game:
                 is_running = False
                 return False
             
-            if self.send_data() == 'S':
+            if self.send_data() == 'p,playing:0,0':
                 self.player.status = 'playing'
 
             self.canvas.draw_background()
