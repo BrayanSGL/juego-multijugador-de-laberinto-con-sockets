@@ -26,7 +26,8 @@ currend_id = '1'
 #THREADS OF CONNECTIONS
 def threaded_client(connection):
     global currend_id
-    msg_to_client = f"{1}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
+    my_id = currend_id
+    msg_to_client = f"{my_id}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     connection.send(str.encode(msg_to_client)) 
     currend_id = str(int(currend_id)+1)
     while True:
@@ -41,9 +42,10 @@ def threaded_client(connection):
                 connection.sendall(str.encode(reply))
         except:
             break
-
+    print(f'Lost connection of player: {my_id}')
+    connection.close()
 #MAIN LOOP
 while True:
     connection, address = socket_server.accept()
-    print(f"Connected to: {address}")
+    print(f"Connected from: {address}")
     start_new_thread(threaded_client, (connection,))

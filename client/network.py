@@ -12,16 +12,15 @@ class Network:
         self.free_coordinates = eval(self.decode_settings()[1])
         self.wall_coordinates = eval(self.decode_settings()[2])
         self.chest_coordinates = eval(self.decode_settings()[3])
-        
 
-    def connect(self):
+    def connect(self) -> str:
         try:
             self.client.connect(self.addr)
             return self.client.recv(2048).decode()
         except:
             pass
 
-    def send(self, data):
+    def send(self, data) -> str:
         try:
             self.client.send(str.encode(data))
             return self.client.recv(2048).decode()
@@ -29,5 +28,5 @@ class Network:
             print(e)
             return str(e)
 
-    def decode_settings(self):
+    def decode_settings(self) -> list:
         return self.settings.split(":")

@@ -19,11 +19,11 @@ class Player():
 
         self.msg = 'intro'  # // exit, intro, playing, win, lose
 
-    def draw(self, screen, direction):
+    def draw(self, screen, direction) -> None:
         screen.blit(self.image[direction],
                     (self.x*TILE_SIZE, self.y*TILE_SIZE))
 
-    def move(self, direction):
+    def move(self, direction) -> None:
         if direction == 'up':
             self.y -= 1
         elif direction == 'down':
@@ -43,12 +43,49 @@ class Game:
             0, len(self.network.free_coordinates) - 1)])
         self.canvas = Canvas(self.width, self.height, TITLE)
 
-    def run(self):
+    def intro(self,clock) -> bool:
+        self.send_data()
+        pygame.init()
+
+        # fonts
+        little = pygame.font.SysFont('comicsansms', 20)
+        medium = pygame.font.SysFont('comicsansms', 40)
+        big = pygame.font.SysFont('comicsansms', 55)
+
+        while True:
+            clock.tick(15)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    return False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        self.player.msg = 'exit'
+                        self.send_data()
+                        pygame.quit()
+                        return False
+                    if event.key == pygame.K_i:
+                        self.player.msg = 'playing'
+                        return True
+
+            # Update canvas in intro
+            self.canvas.draw_background()
+            text = big.render('Welcome to the game', True, (255, 0, 0))
+            self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 200))
+            text = medium.render('Press "i" to play', True, (255, 0, 0))
+            self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 300))
+            text = medium.render('Press "q" to quit', True, (255, 0, 0))
+            self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 400))
+            self.canvas.update()
+
+
+
+    def run(self) -> None:
         direction = ['up', 'down', 'left', 'right']
         direction_str = direction[random.randint(0, 3)]
         print(self.width, self.height)
         clock = pygame.time.Clock()
-        is_running = True
+        is_running = self.intro(clock)
         while is_running:
             clock.tick(FPS)
             for event in pygame.event.get():
@@ -74,7 +111,7 @@ class Game:
 
         pygame.quit()
 
-    def send_data(self):
+    def send_data(self) -> str:
         data = self.network.send(str(
             self.network.id)+':'+str(self.player.x)+','+str(self.player.y)+':'+self.player.msg)
         return self.network.send(data)
@@ -89,20 +126,20 @@ class Canvas:
         pygame.display.set_caption(self.title)
 
     @staticmethod
-    def update():
+    def update() -> None:
         pygame.display.update()
 
-    def draw_text(self, text, size, color, x, y):
+    def draw_text(self, text, size, color, x, y) -> None:
         pygame.font.init()
         font = pygame.font.SysFont("comicsans", size, True)
         text = font.render(text, 1, color)
 
         self.screen.blit(text, (x, y))
 
-    def get_canvas(self):
+    def get_canvas(self) -> pygame.Surface:
         return self.screen
 
-    def draw_background(self):
+    def draw_background(self) -> None:
         self.screen.fill((0, 0, 0))
         # for row in range(len(WORLD_MAP)):
         #     for col in range(len(WORLD_MAP[row])):
