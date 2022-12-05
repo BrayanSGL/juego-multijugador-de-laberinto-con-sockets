@@ -4,10 +4,15 @@ import socket
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "192.168.1.67"
+        self.server = "192.168.1.93"
         self.port = 9999
         self.addr = (self.server, self.port)
-        self.id = self.connect()
+        self.settings = self.connect()
+        self.id = self.decode_settings()[0]
+        self.free_coordinates = eval(self.decode_settings()[1])
+        self.wall_coordinates = eval(self.decode_settings()[2])
+        self.chest_coordinates = eval(self.decode_settings()[3])
+        
 
     def connect(self):
         try:
@@ -23,3 +28,6 @@ class Network:
         except socket.error as e:
             print(e)
             return str(e)
+
+    def decode_settings(self):
+        return self.settings.split(":")

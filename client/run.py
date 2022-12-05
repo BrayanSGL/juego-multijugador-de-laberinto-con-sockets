@@ -1,5 +1,5 @@
 import game
-from settings import WIDTH,HEIGHT
+from settings_client import WIDTH,HEIGHT
 
 
 if __name__ == '__main__':
