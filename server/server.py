@@ -30,8 +30,8 @@ message = ''
 #THREADS OF CONNECTIONS
 def threaded_client(connection):
     global currend_id, time_to_start, message
-    my_id = currend_id
-    msg_to_client = f"{my_id}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
+    id_client = currend_id
+    msg_to_client = f"{id_client}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     connection.send(str.encode(msg_to_client)) 
     currend_id = str(int(currend_id)+1)
     while True:
@@ -44,22 +44,22 @@ def threaded_client(connection):
             else:
                 #Magic
                 #get data of client
-                position = reply.split(":")[1]
+                position_client = reply.split(":")[1]
                 message_client = reply.split(":")[2]
-                print(f"Player {my_id} is in {position} and says {message_client}")
+                print(f"Player {id_client} is in {position_client} and says {message_client}")
                 #Want start game?
-                if message_client == "start" or time_to_start:
+                if message_client == "start" or time_to_start or message == 'start':
                     #send data to client
                     #T-15
-                    message = 'conutdown'
-                    reply = f"{my_id}:{position}:{message}"
+                    message = 'start'
+                    reply = f"{id_client}:{position_client}:{message}"
                     connection.sendall(str.encode(reply))
                     time_to_start = True
                     for i in range(15,0,-1):
                         time.sleep(1)
                         print(f"Time to start: {i}")
                         message = i   
-                        reply = f"{my_id}:{position}:{message}"
+                        reply = f"{id_client}:{position_client}:{message}"
                         data = connection.recv(BUFFER_SIZE)
                         print(reply,'reply')                        
                         connection.sendall(str.encode(reply))
@@ -68,7 +68,7 @@ def threaded_client(connection):
                     connection.sendall(str.encode(reply))
         except:
             break
-    print(f'Lost connection of player: {my_id}')
+    print(f'Lost connection of player: {id_client}')
     connection.close()
 #MAIN LOOP
 while True:
