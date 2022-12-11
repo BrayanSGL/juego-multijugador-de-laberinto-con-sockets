@@ -24,11 +24,12 @@ print(f"Waiting for a connection, Server Started in {HOST} ip: {SERVER_IP}")
 #GLOBAL VARIABLES
 currend_id = '1'
 time_to_start = False
+message = ''
 
 
 #THREADS OF CONNECTIONS
 def threaded_client(connection):
-    global currend_id, time_to_start
+    global currend_id, time_to_start, message
     my_id = currend_id
     msg_to_client = f"{my_id}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     connection.send(str.encode(msg_to_client)) 
@@ -44,12 +45,14 @@ def threaded_client(connection):
                 #Magic
                 #get data of client
                 position = reply.split(":")[1]
-                message = reply.split(":")[2]
-                print(f"Player {my_id} is in {position} and says {message}")
+                message_client = reply.split(":")[2]
+                print(f"Player {my_id} is in {position} and says {message_client}")
                 #Want start game?
-                if message == "start" or time_to_start :
+                if message_client == "start" or time_to_start:
                     #send data to client
                     #T-15
+                    message = 'conutdown'
+                    reply = f"{my_id}:{position}:{message}"
                     connection.sendall(str.encode(reply))
                     time_to_start = True
                     for i in range(15,0,-1):
