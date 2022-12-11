@@ -43,7 +43,7 @@ class Game:
             0, len(self.network.free_coordinates) - 1)])
         self.canvas = Canvas(self.width, self.height, TITLE)
 
-    def draw_intro(self) -> None:
+    def draw_intro(self, time) -> None:
         pygame.init()
         # fonts
         little = pygame.font.SysFont('comicsansms', 20)
@@ -52,20 +52,18 @@ class Game:
         self.canvas.draw_background()
         text = big.render('Welcome to the game', True, (255, 0, 0))
         self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 200))
-        text = medium.render('Press "i" to play', True, (255, 0, 0))
+        text = medium.render('Press "i" to play', True, (255, 255, 255))
         self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 300))
-        text = medium.render('Press "q" to quit', True, (255, 0, 0))
+        text = medium.render('Press "q" to quit', True, (255, 255, 255))
         self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 400))
+        text = little.render(f'time to start T-{time}', True, (255, 255, 255))
+        self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 500))
         self.canvas.update()
 
-
-    def intro(self,clock) -> bool:
-        
-
+    def intro(self, clock) -> bool:
         while True:
             clock.tick(15)
-            server_msg = self.send_data()
-            print(server_msg)
+            self.send_data()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     pygame.quit()
@@ -76,27 +74,25 @@ class Game:
                         self.send_data()
                         pygame.quit()
                         return False
-                    if event.key == pygame.K_i:
-                        self.player.msg = 'start'
-                        while True:
-                            clock.tick(15)
-                            time_to_start = self.send_data()
-                            time_to_start = int(time_to_start.split(':')[2])
-                            print(time_to_start)
-                            if time_to_start == 1:
-                                break
-                            self.draw_intro()
-                        return True
+                keys = pygame.key.get_pressed()
+
+                if keys[pygame.K_i]:
+                    self.player.msg = 'start'
+                    while True:
+                        clock.tick(15)
+                        time_to_start = self.send_data()
+                        time_to_start = int(time_to_start.split(':')[2])
+                        if time_to_start == 1:
+                            break
+                        self.draw_intro(time=time_to_start)
+                    return True
 
             # Update canvas in intro
-            self.draw_intro()
-
-
+            self.draw_intro(15)
 
     def run(self) -> None:
         direction = ['up', 'down', 'left', 'right']
         direction_str = direction[random.randint(0, 3)]
-        print(self.width, self.height)
         clock = pygame.time.Clock()
         is_running = self.intro(clock)
         self.player.msg = 'playing'

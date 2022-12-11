@@ -5,6 +5,7 @@ import time
 
 socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+BUFFER_SIZE = 2048
 # Get local machine name
 HOST = socket.gethostname()
 
@@ -29,13 +30,12 @@ time_to_start = False
 def threaded_client(connection):
     global currend_id, time_to_start
     my_id = currend_id
-    control = True
     msg_to_client = f"{my_id}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     connection.send(str.encode(msg_to_client)) 
     currend_id = str(int(currend_id)+1)
     while True:
         try:
-            data = connection.recv(2048)
+            data = connection.recv(BUFFER_SIZE)
             reply = data.decode('utf-8')
             if not data:
                 connection.sendall(str.encode('Goodbye'))
@@ -47,7 +47,7 @@ def threaded_client(connection):
                 message = reply.split(":")[2]
                 print(f"Player {my_id} is in {position} and says {message}")
                 #Want start game?
-                if message == "start" or (time_to_start and control) :
+                if message == "start" or time_to_start :
                     #send data to client
                     #T-15
                     connection.sendall(str.encode(reply))
@@ -57,10 +57,10 @@ def threaded_client(connection):
                         print(f"Time to start: {i}")
                         message = i
                         reply = f"{my_id}:{position}:{message}"
-                        data = connection.recv(2048)
+                        data = connection.recv(BUFFER_SIZE)
+                        print(reply,'reply')                        
                         connection.sendall(str.encode(reply))
                     time_to_start = False
-                    control = False
                 else:
                     connection.sendall(str.encode(reply))
         except:
