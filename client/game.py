@@ -16,22 +16,70 @@ class Player():
             'left': pygame.transform.scale(pygame.image.load('assets/player/left.png'), (TILE_SIZE, TILE_SIZE)),
             'right': pygame.transform.scale(pygame.image.load('assets/player/right.png'), (TILE_SIZE, TILE_SIZE))
         }
+        self.wall_image = pygame.transform.scale(
+            pygame.image.load('assets/map/wall.png'), (TILE_SIZE, TILE_SIZE))
+        self.chest_image = pygame.transform.scale(
+            pygame.image.load('assets/map/chest.png'), (TILE_SIZE, TILE_SIZE))
 
         self.msg = 'intro'  # // exit, intro, playing, win, lose
+        self.network = Network()
+        self.found_walls = []
+        self.found_chest = []
 
     def draw(self, screen, direction) -> None:
         screen.blit(self.image[direction],
                     (self.x*TILE_SIZE, self.y*TILE_SIZE))
+        for wall in self.found_walls:
+            screen.blit(self.wall_image,
+                        (wall[0]*TILE_SIZE, wall[1]*TILE_SIZE))
+        for chest in self.found_chest:
+            screen.blit(self.chest_image,
+                        (chest[0]*TILE_SIZE, chest[1]*TILE_SIZE))
 
     def move(self, direction) -> None:
-        if direction == 'up':
+        free_coordinates = self.network.free_coordinates
+        chest_coordinates = self.network.chest_coordinates
+        wall_coordinates = self.network.wall_coordinates
+
+        if direction == 'up' and (self.x, self.y - 1) in free_coordinates:
             self.y -= 1
-        elif direction == 'down':
+        elif direction == 'down' and (self.x, self.y + 1) in free_coordinates:
             self.y += 1
-        elif direction == 'left':
+        elif direction == 'left' and (self.x - 1, self.y) in free_coordinates:
             self.x -= 1
-        elif direction == 'right':
+        elif direction == 'right' and (self.x + 1, self.y) in free_coordinates:
             self.x += 1
+        else:
+            if direction == 'up' and (self.x, self.y - 1) in wall_coordinates:
+                self.found_walls.append((self.x, self.y - 1))
+            elif direction == 'down' and (self.x, self.y + 1) in wall_coordinates:
+                self.found_walls.append((self.x, self.y + 1))
+            elif direction == 'left' and (self.x - 1, self.y) in wall_coordinates:
+                self.found_walls.append((self.x - 1, self.y))
+            elif direction == 'right' and (self.x + 1, self.y) in wall_coordinates:
+                self.found_walls.append((self.x + 1, self.y))
+
+            if direction == 'up' and (self.x, self.y - 1) in chest_coordinates:
+                self.found_chest.append((self.x, self.y - 1))
+                self.msg = 'win'
+            elif direction == 'down' and (self.x, self.y + 1) in chest_coordinates:
+                self.found_chest.append((self.x, self.y + 1))
+                self.msg = 'win'
+            elif direction == 'left' and (self.x - 1, self.y) in chest_coordinates:
+                self.found_chest.append((self.x - 1, self.y))
+                self.msg = 'win'
+            elif direction == 'right' and (self.x + 1, self.y) in chest_coordinates:
+                self.found_chest.append((self.x + 1, self.y))
+                self.msg = 'win'
+
+        # if (self.x, self.y) in chest_coordinates:
+        #     self.msg = 'win'
+        #     #draw chest and win
+
+        # if (self.x, self.y) in wall_coordinates:
+        #     self.found_walls.append((self.x, self.y))
+        #     print(self.found_walls, 'found walls')
+        #     #draw wall
 
 
 class Game:
@@ -105,7 +153,8 @@ class Game:
         direction = ['up', 'down', 'left', 'right']
         direction_str = direction[random.randint(0, 3)]
         clock = pygame.time.Clock()
-        is_running = self.intro(clock)
+        #is_running = self.intro(clock)
+        is_running = True
         self.player.msg = 'playing'
         while is_running:
             clock.tick(FPS)
