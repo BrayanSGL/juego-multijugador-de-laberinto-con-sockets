@@ -60,11 +60,12 @@ class Game:
 
 
     def intro(self,clock) -> bool:
-        self.send_data()
         
 
         while True:
             clock.tick(15)
+            server_msg = self.send_data()
+            print(server_msg)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     pygame.quit()
@@ -78,6 +79,7 @@ class Game:
                     if event.key == pygame.K_i:
                         self.player.msg = 'start'
                         while True:
+                            clock.tick(15)
                             time_to_start = self.send_data()
                             time_to_start = int(time_to_start.split(':')[2])
                             print(time_to_start)
@@ -96,7 +98,8 @@ class Game:
         direction_str = direction[random.randint(0, 3)]
         print(self.width, self.height)
         clock = pygame.time.Clock()
-        is_running = True#self.intro(clock)
+        is_running = self.intro(clock)
+        self.player.msg = 'playing'
         while is_running:
             clock.tick(FPS)
             for event in pygame.event.get():

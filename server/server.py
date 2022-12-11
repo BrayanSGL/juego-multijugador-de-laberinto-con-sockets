@@ -29,6 +29,7 @@ time_to_start = False
 def threaded_client(connection):
     global currend_id, time_to_start
     my_id = currend_id
+    control = True
     msg_to_client = f"{my_id}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     connection.send(str.encode(msg_to_client)) 
     currend_id = str(int(currend_id)+1)
@@ -46,18 +47,20 @@ def threaded_client(connection):
                 message = reply.split(":")[2]
                 print(f"Player {my_id} is in {position} and says {message}")
                 #Want start game?
-                if message == "start" or time_to_start:
+                if message == "start" or (time_to_start and control) :
                     #send data to client
                     #T-15
                     connection.sendall(str.encode(reply))
                     time_to_start = True
                     for i in range(15,0,-1):
                         time.sleep(1)
+                        print(f"Time to start: {i}")
                         message = i
                         reply = f"{my_id}:{position}:{message}"
                         data = connection.recv(2048)
                         connection.sendall(str.encode(reply))
                     time_to_start = False
+                    control = False
                 else:
                     connection.sendall(str.encode(reply))
         except:
