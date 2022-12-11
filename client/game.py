@@ -62,7 +62,7 @@ class Game:
 
     def intro(self, clock) -> bool:
         while True:
-            clock.tick(15)
+            clock.tick(FPS)
             self.send_data()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -74,18 +74,17 @@ class Game:
                         self.send_data()
                         pygame.quit()
                         return False
-                keys = pygame.key.get_pressed()
 
-                if keys[pygame.K_i]:
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_i:
                     self.player.msg = 'start'
                     while True:
-                        clock.tick(15)
-                        time_to_start = self.send_data()
-                        time_to_start = int(time_to_start.split(':')[2])
-                        if time_to_start == 1:
-                            break
-                        self.draw_intro(time=time_to_start)
-                    return True
+                        server_data_time = self.send_data().split(':')
+                        server_data_time = int(server_data_time[2])
+                        if server_data_time == 1:
+                            return True
+                        self.draw_intro(int(server_data_time))
+
+
 
             # Update canvas in intro
             self.draw_intro(15)
@@ -122,8 +121,7 @@ class Game:
         pygame.quit()
 
     def send_data(self) -> str:
-        data = self.network.send(str(
-            self.network.id)+':'+str(self.player.x)+','+str(self.player.y)+':'+self.player.msg)
+        data = str(self.network.id)+':'+str(self.player.x)+','+str(self.player.y)+':'+self.player.msg
         return self.network.send(data)
 
 

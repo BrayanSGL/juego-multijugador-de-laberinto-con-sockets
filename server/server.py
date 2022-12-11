@@ -55,7 +55,7 @@ def threaded_client(connection):
                     for i in range(15,0,-1):
                         time.sleep(1)
                         print(f"Time to start: {i}")
-                        message = i
+                        message = i   
                         reply = f"{my_id}:{position}:{message}"
                         data = connection.recv(BUFFER_SIZE)
                         print(reply,'reply')                        
