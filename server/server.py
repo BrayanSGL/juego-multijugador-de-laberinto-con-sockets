@@ -1,6 +1,7 @@
 from settings_server import *
 from _thread import *
 import socket
+import time
 
 socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -17,15 +18,16 @@ except socket.error as e:
     print(str(e))
 
 socket_server.listen(2)
-print(f"Waiting for a connection, Server Started in {HOST}")
+print(f"Waiting for a connection, Server Started in {HOST} ip: {SERVER_IP}")
 
 #GLOBAL VARIABLES
 currend_id = '1'
+time_to_start = False
 
 
 #THREADS OF CONNECTIONS
 def threaded_client(connection):
-    global currend_id
+    global currend_id, time_to_start
     my_id = currend_id
     msg_to_client = f"{my_id}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     connection.send(str.encode(msg_to_client)) 
@@ -38,8 +40,26 @@ def threaded_client(connection):
                 connection.sendall(str.encode('Goodbye'))
                 break
             else:
-                print('Received: ' + reply)
-                connection.sendall(str.encode(reply))
+                #Magic
+                #get data of client
+                position = reply.split(":")[1]
+                message = reply.split(":")[2]
+                print(f"Player {my_id} is in {position} and says {message}")
+                #Want start game?
+                if message == "start" or time_to_start:
+                    #send data to client
+                    #T-15
+                    connection.sendall(str.encode(reply))
+                    time_to_start = True
+                    for i in range(15,0,-1):
+                        time.sleep(1)
+                        message = i
+                        reply = f"{my_id}:{position}:{message}"
+                        data = connection.recv(2048)
+                        connection.sendall(str.encode(reply))
+                    time_to_start = False
+                else:
+                    connection.sendall(str.encode(reply))
         except:
             break
     print(f'Lost connection of player: {my_id}')
