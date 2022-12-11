@@ -77,8 +77,10 @@ class Game:
 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_i:
                     self.player.msg = 'start'
+                    self.send_data()
                     while True:
                         server_data_time = self.send_data().split(':')
+                        print(server_data_time, server_data_time[2], 'server_data_time')
                         server_data_time = int(server_data_time[2])
                         if server_data_time == 1:
                             return True
