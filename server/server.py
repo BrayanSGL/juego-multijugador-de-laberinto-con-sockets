@@ -21,18 +21,18 @@ except socket.error as e:
 socket_server.listen(2)
 print(f"Waiting for a connection, Server Started in {HOST} ip: {SERVER_IP}")
 
-#GLOBAL VARIABLES
+# GLOBAL VARIABLES
 currend_id = '1'
 time_to_start = False
 message = ''
 
 
-#THREADS OF CONNECTIONS
+# THREADS OF CONNECTIONS
 def threaded_client(connection):
     global currend_id, time_to_start, message
     id_client = currend_id
     msg_to_client = f"{id_client}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
-    connection.send(str.encode(msg_to_client)) 
+    connection.send(str.encode(msg_to_client))
     currend_id = str(int(currend_id)+1)
     while True:
         try:
@@ -42,35 +42,44 @@ def threaded_client(connection):
                 connection.sendall(str.encode('Goodbye'))
                 break
             else:
-                #Magic
-                #get data of client
+                # Magic
+                # get data of client
                 position_client = reply.split(":")[1]
                 message_client = reply.split(":")[2]
-                print(f"Player {id_client} is in {position_client} and says {message_client}")
-                #Want start game?
+                print(
+                    f"Player {id_client} is in {position_client} and says {message_client}")
+                # Want start game?
                 if message_client == "start" or time_to_start or message == 'start':
-                    #send data to client
-                    #T-15
+                    # send data to client
+                    # T-15
                     message = 'start'
                     reply = f"{id_client}:{position_client}:{message}"
                     connection.sendall(str.encode(reply))
                     time_to_start = True
-                    for i in range(15,0,-1):
+                    for i in range(15, 0, -1):
                         time.sleep(1)
                         print(f"Time to start: {i}")
-                        message = i   
+                        message = i
                         reply = f"{id_client}:{position_client}:{message}"
                         data = connection.recv(BUFFER_SIZE)
-                        print(reply,'reply')                        
+                        print(reply, 'reply')
                         connection.sendall(str.encode(reply))
                     time_to_start = False
                 else:
+                    connection.sendall(str.encode(reply))
+
+                if message_client == "win":
+                    message = f'won:{id_client}'
+                    reply = f"{id_client}:{position_client}:{message}"
+                    print(reply)
                     connection.sendall(str.encode(reply))
         except:
             break
     print(f'Lost connection of player: {id_client}')
     connection.close()
-#MAIN LOOP
+
+
+# MAIN LOOP
 while True:
     connection, address = socket_server.accept()
     print(f"Connected from: {address}")

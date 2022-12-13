@@ -72,15 +72,6 @@ class Player():
                 self.found_chest.append((self.x + 1, self.y))
                 self.msg = 'win'
 
-        # if (self.x, self.y) in chest_coordinates:
-        #     self.msg = 'win'
-        #     #draw chest and win
-
-        # if (self.x, self.y) in wall_coordinates:
-        #     self.found_walls.append((self.x, self.y))
-        #     print(self.found_walls, 'found walls')
-        #     #draw wall
-
 
 class Game:
     def __init__(self, width, height):
@@ -149,6 +140,21 @@ class Game:
             # Update canvas in intro
             self.draw_intro(15)
 
+    def draw_win_or_lose(self, msg,winner) -> None:
+        pygame.init()
+        # fonts
+        medium = pygame.font.SysFont('comicsansms', 40)
+        big = pygame.font.SysFont('comicsansms', 55)
+        self.canvas.draw_background()
+        text = big.render(f'{msg}', True, (255, 0, 0))
+        self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 200))
+        text = medium.render(f'The winner is {winner}', True, (255, 255, 255))
+        self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 300))
+        text = medium.render('Press "q" to quit', True, (255, 255, 255))
+        self.canvas.get_canvas().blit(text, (self.width/2 - text.get_width()/2, 400))
+        self.canvas.update()
+
+
     def run(self) -> None:
         direction = ['up', 'down', 'left', 'right']
         direction_str = direction[random.randint(0, 3)]
@@ -173,7 +179,13 @@ class Game:
                     elif event.key == pygame.K_SPACE:
                         self.player.move(direction_str)
 
-            self.send_data()
+            info_server = self.send_data()
+            info_server = info_server.split(':')
+            if info_server[2] == 'won':
+                if info_server[3] == str(self.network.id):
+                    self.draw_win_or_lose(['You win', info_server[3]])
+                self.draw_win_or_lose(['You lose', info_server[3]])
+                is_running = False
             # Update canvas
             self.canvas.draw_background()
             self.player.draw(self.canvas.get_canvas(), direction_str)
@@ -211,7 +223,3 @@ class Canvas:
 
     def draw_background(self) -> None:
         self.screen.fill((0, 0, 0))
-        # for row in range(len(WORLD_MAP)):
-        #     for col in range(len(WORLD_MAP[row])):
-        #         tile = WORLD_MAP[row][col]
-        #         self.screen.blit(tile, (col * TILE_SIZE, row * TILE_SIZE))
