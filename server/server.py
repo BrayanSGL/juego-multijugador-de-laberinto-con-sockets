@@ -25,11 +25,11 @@ print(f"Waiting for a connection, Server Started in {HOST} ip: {SERVER_IP}")
 currend_id = '1'
 time_to_start = False
 message = ''
-
+id_winner = ''
 
 # THREADS OF CONNECTIONS
 def threaded_client(connection):
-    global currend_id, time_to_start, message
+    global currend_id, time_to_start, message, id_winner
     id_client = currend_id
     msg_to_client = f"{id_client}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     connection.send(str.encode(msg_to_client))
@@ -65,8 +65,9 @@ def threaded_client(connection):
                         print(reply, 'reply')
                         connection.sendall(str.encode(reply))
                     time_to_start = False
-                if message_client == "win" or message.split(':')[0] == 'won':
-                    message = f'won:{id_client}'
+                if message_client == "win" or (message.split(':')[0] == 'won' and id_winner == ''):
+                    id_winner = id_client
+                    message = f'won:{id_winner}'
                     reply = f"{id_client}:{position_client}:{message}"
                     print(reply)
                     connection.sendall(str.encode(reply))

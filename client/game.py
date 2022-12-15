@@ -83,8 +83,6 @@ class Game:
         self.network = Network()
         self.width = width
         self.height = height
-        # self.player = Player(self.network.free_coordinates[random.randint(
-        #   0, len(self.network.free_coordinates) - 1)])
         self.player = Player(self.network.free_coordinates,
                              self.network.wall_coordinates, self.network.chest_coordinates)
         self.canvas = Canvas(self.width, self.height, TITLE)
@@ -192,42 +190,42 @@ class Game:
 
             info_server = self.send_data()
             info_server = info_server.split(':')
-
-            # if info_server[2] == 'won':
-            #     # self.player.found_chest.append(self.player.network.chest_coordinates)
-            #     self.player.draw(self.canvas.get_canvas(), direction_str)
-            #     self.canvas.update()
-            #     if info_server[3] == str(self.network.id):
-            #         ambient.stop()
-            #         winner = pygame.mixer.Sound('assets/sounds/winner.wav')
-            #         winner.play()
-            #         pygame.time.delay(500)
-            #         while True:
-            #             self.draw_win_or_lose('You win', info_server[3])
-            #             for event in pygame.event.get():
-            #                 if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
-            #                     is_running = False
-            #                     pygame.quit()
-            #                     sys.exit()
-            #                 elif event.type == pygame.KEYDOWN:
-            #                     if event.key == pygame.K_q:
-            #                         is_running = False
-            #                         pygame.quit()
-            #                         sys.exit()
-            #     else:
-            #         ambient.stop()
-            #         loser = pygame.mixer.Sound('assets/sounds/loser.wav')
-            #         loser.play()
-            #         while True:
-            #             self.draw_win_or_lose('You lose', info_server[3])
-            #             for event in pygame.event.get():
-            #                 if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
-            #                     is_running = False
-            #                     pygame.quit()
-            #                 elif event.type == pygame.KEYDOWN:
-            #                     if event.key == pygame.K_q:
-            #                         is_running = False
-            #                         pygame.quit()
+            print(info_server, 'info_server')
+            if info_server[2] == 'won':
+                # self.player.found_chest.append(self.player.network.chest_coordinates)
+                self.player.draw(self.canvas.get_canvas(), direction_str)
+                self.canvas.update()
+                if info_server[3] == str(self.network.id):
+                    ambient.stop()
+                    winner = pygame.mixer.Sound('assets/sounds/winner.wav')
+                    winner.play()
+                    pygame.time.delay(500)
+                    while True:
+                        self.draw_win_or_lose('You win', info_server[3])
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
+                                is_running = False
+                                pygame.quit()
+                                sys.exit()
+                            elif event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_q:
+                                    is_running = False
+                                    pygame.quit()
+                                    sys.exit()
+                else:
+                    ambient.stop()
+                    loser = pygame.mixer.Sound('assets/sounds/loser.wav')
+                    loser.play()
+                    while True:
+                        self.draw_win_or_lose('You lose', info_server[3])
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
+                                is_running = False
+                                pygame.quit()
+                            elif event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_q:
+                                    is_running = False
+                                    pygame.quit()
 
             # Update canvas
             self.canvas.draw_background()
