@@ -1,5 +1,6 @@
 import pygame
 import random
+import sys
 from network import Network
 from settings_client import *
 
@@ -165,8 +166,8 @@ class Game:
         direction = ['up', 'down', 'left', 'right']
         direction_str = direction[random.randint(0, 3)]
         clock = pygame.time.Clock()
-        #is_running = self.intro(clock)
-        is_running = True
+        is_running = self.intro(clock)
+        #is_running = True
         self.player.msg = 'playing'
         while is_running:
             clock.tick(FPS)
@@ -202,10 +203,12 @@ class Game:
                             if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
                                 is_running = False
                                 pygame.quit()
+                                sys.exit()
                             elif event.type == pygame.KEYDOWN:
                                 if event.key == pygame.K_q:
                                     is_running = False
                                     pygame.quit()
+                                    sys.exit()
                 else:
                     ambient.stop()
                     loser = pygame.mixer.Sound('assets/sounds/loser.wav')
