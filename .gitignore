@@ -1,2 +1,3 @@
+# Directorios que deben ignorarse
 __pycache__/
-venv/
+.vscode

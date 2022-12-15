@@ -1,88 +1,55 @@
-from settings_server import *
-from _thread import *
 import socket
-import time
+from server_setup import *
+from _thread import *
+import sys
 
 socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-BUFFER_SIZE = 2048
-# Get local machine name
-HOST = socket.gethostname()
+# Constantes
+BUFFER_SIZE = 2048  # Tamaño del buffer
+HOST = socket.gethostname()  # Obtiene el nombre de la máquina
+SERVER_IP = socket.gethostbyname(HOST)  # Obtiene la IP de la máquina
+PORT = 8888  # Puerto de conexión
 
-# get my ip address
-SERVER_IP = socket.gethostbyname(HOST)
-PORT = 9999
-
+# Conexión
 try:
     socket_server.bind((SERVER_IP, PORT))
 except socket.error as e:
     print(str(e))
 
-socket_server.listen(2)
-print(f"Waiting for a connection, Server Started in {HOST} ip: {SERVER_IP}")
+socket_server.listen(2)  # Escucha a 2 clientes
+print(f"Esperando conexión, servidor iniciado en {HOST} con IP {SERVER_IP}")
 
-# GLOBAL VARIABLES
-currend_id = '1'
-time_to_start = False
-message = ''
-id_winner = ''
+# Variables globales
+current_id = 1
 
-# THREADS OF CONNECTIONS
-def threaded_client(connection):
-    global currend_id, time_to_start, message, id_winner
-    id_client = currend_id
-    msg_to_client = f"{id_client}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
-    connection.send(str.encode(msg_to_client))
-    currend_id = str(int(currend_id)+1)
+
+def threaded_client(conn):
+    global current_id
+    id_client = current_id
+    current_id += 1
+    config_client = f"{id_client}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
+    conn.send(str.encode(config_client))
     while True:
         try:
-            data = connection.recv(BUFFER_SIZE)
-            reply = data.decode('utf-8')
+            data = conn.recv(BUFFER_SIZE)  # Recibe los datos
+            reply = data.decode("utf-8")  # Decodifica los datos
             if not data:
-                connection.sendall(str.encode('Goodbye'))
+                print("Desconexión")
                 break
             else:
-                # Magic
-                # get data of client
-                position_client = reply.split(":")[1]
-                message_client = reply.split(":")[2]
-                print(
-                    f"Player {id_client} is in {position_client} and says {message_client}")
-                # Want start game?
-                if message_client == "start" or time_to_start or message == 'start':
-                    # send data to client
-                    # T-15
-                    message = 'start'
-                    reply = f"{id_client}:{position_client}:{message}"
-                    connection.sendall(str.encode(reply))
-                    time_to_start = True
-                    for i in range(15, 0, -1):
-                        time.sleep(1)
-                        print(f"Time to start: {i}")
-                        message = i
-                        reply = f"{id_client}:{position_client}:{message}"
-                        data = connection.recv(BUFFER_SIZE)
-                        print(reply, 'reply')
-                        connection.sendall(str.encode(reply))
-                    time_to_start = False
-                if message_client == "win" or (message.split(':')[0] == 'won'):
-                    id_winner = id_client
-                    if message.split(':')[0] == 'won':
-                        id_winner = message.split(':')[1]
-                    message = f'won:{id_winner}'
-                    reply = f"{id_client}:{position_client}:{message}"
-                    print(reply)
-                    connection.sendall(str.encode(reply))
-                else:
-                    connection.sendall(str.encode(reply))
+                position_player = reply.split(":")[1]
+                msg_client = reply.split(":")[2]
+                print(f"{id_client}: {position_player}:{msg_client}")
+            conn.sendall(str.encode(reply))  # Envía los datos
         except:
             break
-    print(f'Lost connection of player: {id_client}')
-    connection.close()
+    print(f"Conexión terminada con el jugador {id_client}")
+    current_id -= 1
+    conn.close()
 
-
-# MAIN LOOP
+# Loop principal
 while True:
-    connection, address = socket_server.accept()
-    print(f"Connected from: {address}")
-    start_new_thread(threaded_client, (connection,))
+    client, address = socket_server.accept()  # Acepta la conexión
+    print(f"Conexión aceptada de {address[0]}:{address[1]}")
+    start_new_thread(threaded_client, (client,))
