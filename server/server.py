@@ -65,13 +65,12 @@ def threaded_client(connection):
                         print(reply, 'reply')
                         connection.sendall(str.encode(reply))
                     time_to_start = False
-                else:
-                    connection.sendall(str.encode(reply))
-
-                if message_client == "win":
+                if message_client == "win" or message.split(':')[0] == 'won':
                     message = f'won:{id_client}'
                     reply = f"{id_client}:{position_client}:{message}"
                     print(reply)
+                    connection.sendall(str.encode(reply))
+                else:
                     connection.sendall(str.encode(reply))
         except:
             break
