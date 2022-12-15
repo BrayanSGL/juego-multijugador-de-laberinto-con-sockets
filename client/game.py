@@ -99,7 +99,7 @@ class Game:
         clock = pygame.time.Clock()
         while True:
             clock.tick(1)
-            msg_server = self.send_data().split(":")[2]
+            msg_server = self.send_data().split(":")
             print(msg_server)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -111,7 +111,7 @@ class Game:
                     self.canvas.draw_intro(15)
                     while True:
                         server_data_time = self.send_data().split(":")[2]
-                        print(server_data_time)
+                        print(server_data_time, 'time')
                         if server_data_time == "1":
                             return True
                         self.canvas.draw_background()
@@ -159,6 +159,7 @@ class Game:
         ambinet_sound = pygame.mixer.Sound("Client/assets/sounds/ambient.wav")
         ambinet_sound.play(-1)
         clock = pygame.time.Clock()
+        self.send_data()
         run = self.intro()
         self.player.msg = "playing"
         while run:
@@ -190,6 +191,7 @@ class Game:
     def send_data(self) -> str:
         data = str(self.network.id)+':'+str(self.player.x)+',' + \
             str(self.player.y)+':'+str(self.player.msg)
+        print(data)
         return self.network.send(data)
 
 

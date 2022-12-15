@@ -23,29 +23,35 @@ print(f"Esperando conexión, servidor iniciado en {HOST} con IP {SERVER_IP}")
 
 # Variables globales
 current_id = 1
-msg_server = ""
+msg_server = "intro"
 
 
 def threaded_client(conn):
     global current_id, msg_server
     id_client = current_id
+    position_player = "0,0"
     current_id += 1
     config_client = f"{id_client}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     conn.send(str.encode(config_client))
     while True:
         try:
-            data = conn.recv(BUFFER_SIZE)  # Recibe los datos
-            reply = data.decode("utf-8")  # Decodifica los datos
+            data = conn.recv(BUFFER_SIZE)  # Recibe los 
+            reply = data.decode("utf-8")
+            position_player = reply.split(":")[1]
+            msg_client = reply.split(":")[2]
+            reply = f"{id_client}:{position_player}:{msg_client}"  # Decodifica los datos
+            
             if not data:
                 print("Desconexión")
                 break
             else:
                 position_player = reply.split(":")[1]
                 msg_client = reply.split(":")[2]
-                print(f"{id_client}: {position_player}:{msg_client}")
+                print(f"{id_client}:{position_player}:{msg_client}")
                 # Si el mensaje del cliente es "start" o el mensaje del servidor es "start" para la cuenta regresiva
                 if msg_client == "start" or msg_server == "start":
                     msg_server = "start"
+                    print(f"El jugador {id_client} ha iniciado el juego")
                     # Enviar el tiempo de 15 hacia atras
                     reply = f"{id_client}:{position_player}:{msg_server}"
                     conn.sendall(str.encode(reply))  # Envía los datos
