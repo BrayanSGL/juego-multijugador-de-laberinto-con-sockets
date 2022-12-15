@@ -123,7 +123,7 @@ class Game:
                                 pygame.quit()
                                 sys.exit()
 
-            if msg_server == "start":
+            if msg_server[2] == "start":
                 self.player.msg = "start"
                 self.send_data()
                 # cuenta regresiva de 15 segundos
@@ -191,7 +191,6 @@ class Game:
     def send_data(self) -> str:
         data = str(self.network.id)+':'+str(self.player.x)+',' + \
             str(self.player.y)+':'+str(self.player.msg)
-        print(data)
         return self.network.send(data)
 
 

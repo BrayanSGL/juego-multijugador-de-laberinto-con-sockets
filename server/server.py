@@ -10,7 +10,7 @@ socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 BUFFER_SIZE = 2048  # Tamaño del buffer
 HOST = socket.gethostname()  # Obtiene el nombre de la máquina
 SERVER_IP = socket.gethostbyname(HOST)  # Obtiene la IP de la máquina
-PORT = 8888  # Puerto de conexión
+PORT = 9999  # Puerto de conexión
 
 # Conexión
 try:
@@ -24,10 +24,11 @@ print(f"Esperando conexión, servidor iniciado en {HOST} con IP {SERVER_IP}")
 # Variables globales
 current_id = 1
 msg_server = "intro"
+time_countdown = False
 
 
 def threaded_client(conn):
-    global current_id, msg_server
+    global current_id, msg_server, time_countdown
     id_client = current_id
     position_player = "0,0"
     current_id += 1
@@ -49,18 +50,22 @@ def threaded_client(conn):
                 msg_client = reply.split(":")[2]
                 print(f"{id_client}:{position_player}:{msg_client}")
                 # Si el mensaje del cliente es "start" o el mensaje del servidor es "start" para la cuenta regresiva
-                if msg_client == "start" or msg_server == "start":
-                    msg_server = "start"
+                print(f"{msg_client} - {time_countdown}")
+                if msg_client == "start" or time_countdown:
+                    time_countdown = True
+                    msg_client = "start"
                     print(f"El jugador {id_client} ha iniciado el juego")
                     # Enviar el tiempo de 15 hacia atras
-                    reply = f"{id_client}:{position_player}:{msg_server}"
+                    reply = f"{id_client}:{position_player}:{msg_client}"
                     conn.sendall(str.encode(reply))  # Envía los datos
                     for i in range(15, 0, -1):
-                        msg_server = f"{i}"
-                        reply = f"{id_client}:{position_player}:{msg_server}"
+                        msg_client = f"{i}"
+                        print(f"{i} segundos restantes")
+                        reply = f"{id_client}:{position_player}:{msg_client}"
                         conn.recv(BUFFER_SIZE)
                         conn.sendall(str.encode(reply))  # Envía los datos
                         time.sleep(1)
+                    time_countdown = False
                 else:
                     conn.sendall(str.encode(reply))  # Envía los datos
         except:
