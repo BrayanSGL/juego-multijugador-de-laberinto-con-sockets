@@ -65,8 +65,10 @@ def threaded_client(connection):
                         print(reply, 'reply')
                         connection.sendall(str.encode(reply))
                     time_to_start = False
-                if message_client == "win" or (message.split(':')[0] == 'won' and id_winner == ''):
+                if message_client == "win" or (message.split(':')[0] == 'won'):
                     id_winner = id_client
+                    if message.split(':')[0] == 'won':
+                        id_winner = message.split(':')[1]
                     message = f'won:{id_winner}'
                     reply = f"{id_client}:{position_client}:{message}"
                     print(reply)
