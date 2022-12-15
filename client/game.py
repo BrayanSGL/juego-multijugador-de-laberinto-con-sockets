@@ -109,17 +109,49 @@ class Game:
                     self.send_data()
                     # cuenta regresiva de 15 segundos
                     self.canvas.draw_intro(15)
-                    for i in range(15):
-                        self.canvas.draw_intro(15-i)
-                        pygame.display.update()
-                        pygame.time.wait(1000)
+                    while True:
+                        server_data_time = self.send_data().split(":")[2]
+                        print(server_data_time)
+                        if server_data_time == "1":
+                            return True
                         self.canvas.draw_background()
+                        self.canvas.draw_intro(int(server_data_time))
+                        pygame.display.update()
                         # Procesamiento de eventos del juego dentro del bucle de cuenta regresiva
                         for event in pygame.event.get():
                             if event.type == pygame.QUIT:
                                 pygame.quit()
                                 sys.exit()
-                    return True
+
+            if msg_server == "start":
+                self.player.msg = "start"
+                self.send_data()
+                # cuenta regresiva de 15 segundos
+                while True:
+                    server_data_time = self.send_data().split(":")[2]
+                    print(server_data_time)
+                    if server_data_time == "1":
+                        return True
+                    self.canvas.draw_background()
+                    self.canvas.draw_intro(int(server_data_time))
+                    pygame.display.update()
+                    # Procesamiento de eventos del juego dentro del bucle de cuenta regresiva
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                            sys.exit()
+
+                    # for i in range(15):
+                    #     self.canvas.draw_intro(15-i)
+                    #     pygame.display.update()
+                    #     pygame.time.wait(1000)
+                    #     self.canvas.draw_background()
+                    #     # Procesamiento de eventos del juego dentro del bucle de cuenta regresiva
+                    #     for event in pygame.event.get():
+                    #         if event.type == pygame.QUIT:
+                    #             pygame.quit()
+                    #             sys.exit()
+                    # return True
 
     def run(self) -> None:
         directions = ["up", "down", "left", "right"]
@@ -130,7 +162,7 @@ class Game:
         run = self.intro()
         self.player.msg = "playing"
         while run:
-            clock.tick(1)
+            clock.tick(60)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     run = False

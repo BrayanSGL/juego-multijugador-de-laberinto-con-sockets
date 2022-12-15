@@ -2,6 +2,7 @@ import socket
 from server_setup import *
 from _thread import *
 import sys
+import time
 
 socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -22,10 +23,11 @@ print(f"Esperando conexión, servidor iniciado en {HOST} con IP {SERVER_IP}")
 
 # Variables globales
 current_id = 1
+msg_server = ""
 
 
 def threaded_client(conn):
-    global current_id
+    global current_id, msg_server
     id_client = current_id
     current_id += 1
     config_client = f"{id_client}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
@@ -41,12 +43,26 @@ def threaded_client(conn):
                 position_player = reply.split(":")[1]
                 msg_client = reply.split(":")[2]
                 print(f"{id_client}: {position_player}:{msg_client}")
-            conn.sendall(str.encode(reply))  # Envía los datos
+                # Si el mensaje del cliente es "start" o el mensaje del servidor es "start" para la cuenta regresiva
+                if msg_client == "start" or msg_server == "start":
+                    msg_server = "start"
+                    # Enviar el tiempo de 15 hacia atras
+                    reply = f"{id_client}:{position_player}:{msg_server}"
+                    conn.sendall(str.encode(reply))  # Envía los datos
+                    for i in range(15, 0, -1):
+                        msg_server = f"{i}"
+                        reply = f"{id_client}:{position_player}:{msg_server}"
+                        conn.recv(BUFFER_SIZE)
+                        conn.sendall(str.encode(reply))  # Envía los datos
+                        time.sleep(1)
+                else:
+                    conn.sendall(str.encode(reply))  # Envía los datos
         except:
             break
     print(f"Conexión terminada con el jugador {id_client}")
     current_id -= 1
     conn.close()
+
 
 # Loop principal
 while True:
