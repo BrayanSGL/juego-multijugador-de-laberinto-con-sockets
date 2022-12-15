@@ -10,7 +10,7 @@ socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 BUFFER_SIZE = 2048  # Tamaño del buffer
 HOST = socket.gethostname()  # Obtiene el nombre de la máquina
 SERVER_IP = socket.gethostbyname(HOST)  # Obtiene la IP de la máquina
-PORT = 9999  # Puerto de conexión
+PORT = 6751  # Puerto de conexión
 
 # Conexión
 try:
@@ -67,13 +67,16 @@ def threaded_client(conn):
                         time.sleep(1)
                     time_countdown = False
                 # Si el cliente envia "chest"
-                elif msg_client == "chest":
+                elif msg_client == "chest" or (msg_client == "winner" and id_client == 0):
                     id_winner = id_client
                     msg_client = "winner"
                     print(f"El jugador {id_client} ha encontrado un cofre")
                     reply = f"{id_client}:{id_winner}:{msg_client}"
                     conn.sendall(str.encode(reply))
-
+                elif id_winner != 0:
+                    msg_client = "winner"
+                    reply = f"{id_client}:{id_winner}:{msg_client}"
+                    conn.sendall(str.encode(reply))
                 else:
                     conn.sendall(str.encode(reply))  # Envía los datos
         except:

@@ -170,6 +170,7 @@ class Game:
 
             msg_server = self.send_data()
             msg_server = msg_server.split(":")
+            print(msg_server)
             if msg_server[2] == "winner":
                 self.player.draw(self.canvas.get_canvas(), direction)
                 self.canvas.update()
@@ -198,7 +199,7 @@ class Game:
                     while True:
                         clock.tick(20)
                         self.canvas.draw_background()
-                        self.canvas.draw_loser(msg_server[1])
+                        self.canvas.draw_loser(self.network.id, msg_server[1])
                         pygame.display.update()
                         for event in pygame.event.get():
                             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -255,6 +256,7 @@ class Canvas:
         self.draw_text("Ganaste jugador: "+winner, 55, GOLD, 150)
         self.draw_text("Press ESC to Exit", 40, WHITE, 400)
 
-    def draw_loser(self, loser) -> None:
+    def draw_loser(self, loser, winner) -> None:
         self.draw_text("Perdiste jugador: "+loser, 55, RED, 150)
+        self.draw_text("Ganó el jugador: "+winner, 42, GOLD, 250)
         self.draw_text("Press ESC to Exit", 40, WHITE, 400)
