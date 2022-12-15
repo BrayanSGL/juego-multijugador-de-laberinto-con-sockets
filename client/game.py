@@ -98,7 +98,7 @@ class Game:
         pygame.display.update()
         clock = pygame.time.Clock()
         while True:
-            clock.tick(1)
+            clock.tick(FPS)
             msg_server = self.send_data().split(":")
             # print(msg_server)
             for event in pygame.event.get():
@@ -151,7 +151,7 @@ class Game:
         run = self.intro()
         self.player.msg = "playing"
         while run:
-            clock.tick(60)
+            clock.tick(FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     run = False
@@ -182,7 +182,7 @@ class Game:
                     win_sound.play()
                     pygame.time.delay(500)
                     while True:
-                        clock.tick(20)
+                        clock.tick(FPS/3)
                         self.canvas.draw_background()
                         self.canvas.draw_winner(self.network.id)
                         pygame.display.update()
@@ -197,7 +197,7 @@ class Game:
                         "Client/assets/sounds/loser.wav")
                     lose_sound.play()
                     while True:
-                        clock.tick(20)
+                        clock.tick(FPS/3)
                         self.canvas.draw_background()
                         self.canvas.draw_loser(self.network.id, msg_server[1])
                         pygame.display.update()

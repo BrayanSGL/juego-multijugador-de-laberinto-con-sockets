@@ -67,7 +67,7 @@ def threaded_client(conn):
                         time.sleep(1)
                     time_countdown = False
                 # Si el cliente envia "chest"
-                elif msg_client == "chest" or (msg_client == "winner" and id_client == 0):
+                elif msg_client == "chest":
                     id_winner = id_client
                     msg_client = "winner"
                     print(f"El jugador {id_client} ha encontrado un cofre")
