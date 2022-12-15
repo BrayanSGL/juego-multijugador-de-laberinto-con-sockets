@@ -100,7 +100,7 @@ class Game:
         while True:
             clock.tick(1)
             msg_server = self.send_data().split(":")
-            print(msg_server)
+            # print(msg_server)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     return False
@@ -111,7 +111,7 @@ class Game:
                     self.canvas.draw_intro(15)
                     while True:
                         server_data_time = self.send_data().split(":")[2]
-                        print(server_data_time, 'time')
+                        #print(server_data_time, 'time')
                         if server_data_time == "1":
                             return True
                         self.canvas.draw_background()
@@ -129,7 +129,7 @@ class Game:
                 # cuenta regresiva de 15 segundos
                 while True:
                     server_data_time = self.send_data().split(":")[2]
-                    print(server_data_time)
+                    # print(server_data_time)
                     if server_data_time == "1":
                         return True
                     self.canvas.draw_background()
@@ -140,18 +140,6 @@ class Game:
                         if event.type == pygame.QUIT:
                             pygame.quit()
                             sys.exit()
-
-                    # for i in range(15):
-                    #     self.canvas.draw_intro(15-i)
-                    #     pygame.display.update()
-                    #     pygame.time.wait(1000)
-                    #     self.canvas.draw_background()
-                    #     # Procesamiento de eventos del juego dentro del bucle de cuenta regresiva
-                    #     for event in pygame.event.get():
-                    #         if event.type == pygame.QUIT:
-                    #             pygame.quit()
-                    #             sys.exit()
-                    # return True
 
     def run(self) -> None:
         directions = ["up", "down", "left", "right"]
@@ -180,7 +168,44 @@ class Game:
                     elif event.key == pygame.K_SPACE:
                         self.player.move(direction)
 
-            self.send_data()
+            msg_server = self.send_data()
+            msg_server = msg_server.split(":")
+            if msg_server[2] == "winner":
+                self.player.draw(self.canvas.get_canvas(), direction)
+                self.canvas.update()
+
+                if self.network.id == msg_server[1]:
+                    ambinet_sound.stop()
+                    win_sound = pygame.mixer.Sound(
+                        "Client/assets/sounds/winner.wav")
+                    win_sound.play()
+                    pygame.time.delay(500)
+                    while True:
+                        clock.tick(20)
+                        self.canvas.draw_background()
+                        self.canvas.draw_winner(self.network.id)
+                        pygame.display.update()
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                                run = False
+                                pygame.quit()
+                                sys.exit()
+                else:
+                    ambinet_sound.stop()
+                    lose_sound = pygame.mixer.Sound(
+                        "Client/assets/sounds/loser.wav")
+                    lose_sound.play()
+                    while True:
+                        clock.tick(20)
+                        self.canvas.draw_background()
+                        self.canvas.draw_loser(msg_server[1])
+                        pygame.display.update()
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                                run = False
+                                pygame.quit()
+                                sys.exit()
+
             self.canvas.draw_background()
             self.player.draw(self.canvas.window, direction)
             self.canvas.update()
@@ -227,9 +252,9 @@ class Canvas:
             self.draw_text("Presione ESC para salir", 40, WHITE, 400)
 
     def draw_winner(self, winner) -> None:
-        self.draw_text("Winner: "+winner, 55, RED, 150)
+        self.draw_text("Ganaste jugador: "+winner, 55, GOLD, 150)
         self.draw_text("Press ESC to Exit", 40, WHITE, 400)
 
     def draw_loser(self, loser) -> None:
-        self.draw_text("Loser: "+loser, 55, RED, 150)
+        self.draw_text("Perdiste jugador: "+loser, 55, RED, 150)
         self.draw_text("Press ESC to Exit", 40, WHITE, 400)

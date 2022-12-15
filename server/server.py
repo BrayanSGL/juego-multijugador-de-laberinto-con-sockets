@@ -23,12 +23,13 @@ print(f"Esperando conexión, servidor iniciado en {HOST} con IP {SERVER_IP}")
 
 # Variables globales
 current_id = 1
-msg_server = "intro"
 time_countdown = False
+id_winner = 0
+message = ""
 
 
 def threaded_client(conn):
-    global current_id, msg_server, time_countdown
+    global current_id,id_winner, time_countdown
     id_client = current_id
     position_player = "0,0"
     current_id += 1
@@ -50,7 +51,6 @@ def threaded_client(conn):
                 msg_client = reply.split(":")[2]
                 print(f"{id_client}:{position_player}:{msg_client}")
                 # Si el mensaje del cliente es "start" o el mensaje del servidor es "start" para la cuenta regresiva
-                print(f"{msg_client} - {time_countdown}")
                 if msg_client == "start" or time_countdown:
                     time_countdown = True
                     msg_client = "start"
@@ -66,6 +66,14 @@ def threaded_client(conn):
                         conn.sendall(str.encode(reply))  # Envía los datos
                         time.sleep(1)
                     time_countdown = False
+                # Si el cliente envia "chest"
+                elif msg_client == "chest":
+                    id_winner = id_client
+                    msg_client = "winner"
+                    print(f"El jugador {id_client} ha encontrado un cofre")
+                    reply = f"{id_client}:{id_winner}:{msg_client}"
+                    conn.sendall(str.encode(reply))
+
                 else:
                     conn.sendall(str.encode(reply))  # Envía los datos
         except:
