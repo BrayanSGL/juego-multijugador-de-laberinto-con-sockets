@@ -16,9 +16,9 @@ WORLD_MAP = [
 
 FREE_COORDINATES = []
 for i in range(len(WORLD_MAP)):
-    for j in range(len(WORLD_MAP[i])): 
+    for j in range(len(WORLD_MAP[i])):
         if WORLD_MAP[i][j] != 'X' and WORLD_MAP[i][j] != 'C':
-            FREE_COORDINATES.append((i, j)) 
+            FREE_COORDINATES.append((i, j))
 
 WALL_COORDINATES = []
 for i in range(len(WORLD_MAP)):

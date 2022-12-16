@@ -81,11 +81,11 @@ class Player:
 
 
 class Game:
-    def __init__(self, width, height, my_nickname) -> None:
+    def __init__(self, width, height) -> None:
         pygame.init()
         self.width = width
         self.height = height
-        self.network = Network(my_nickname)
+        self.network = Network()
         self.player = Player(self.network.free_coordinates,
                              self.network.wall_coordinates, self.network.chest_coordinates)
         self.canvas = Canvas(self.width, self.height, TITLE)
@@ -168,7 +168,7 @@ class Game:
 
             msg_server = self.send_data()
             msg_server = msg_server.split(":")
-            print(msg_server)
+            #print(msg_server)
             if msg_server[2] == "winner":
                 self.player.draw(self.canvas.get_canvas(), direction)
                 self.canvas.update()
@@ -182,7 +182,7 @@ class Game:
                     while True:
                         clock.tick(FPS/3)
                         self.canvas.draw_background()
-                        self.canvas.draw_winner(msg_server[0])
+                        self.canvas.draw_winner(self.network.id)
                         pygame.display.update()
                         for event in pygame.event.get():
                             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -197,7 +197,7 @@ class Game:
                     while True:
                         clock.tick(FPS/3)
                         self.canvas.draw_background()
-                        self.canvas.draw_loser(self.network.my_nickname, msg_server[1])
+                        self.canvas.draw_loser(self.network.id, msg_server[1])
                         pygame.display.update()
                         for event in pygame.event.get():
                             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -242,19 +242,18 @@ class Canvas:
         self.window.fill(BLACK)
 
     def draw_intro(self, time_left) -> None:
+        self.draw_text("Maze Game", 55, RED, 150)
         if time_left != 15:
-            self.draw_text("Maze Game", 55, RED, 150)
             self.draw_text("Tiempo restante: "+str(time_left), 40, WHITE, 350)
         else:
-            self.draw_text("Maze Game", 55, RED, 150)
             self.draw_text("Presione 'i' para iniciar", 40, WHITE, 300)
             self.draw_text("Presione ESC para salir", 40, WHITE, 400)
 
     def draw_winner(self, winner) -> None:
-        self.draw_text("Ganaste "+winner, 55, GOLD, 150)
+        self.draw_text("Ganaste jugador: "+winner, 55, GOLD, 150)
         self.draw_text("Press ESC to Exit", 40, WHITE, 400)
 
     def draw_loser(self, loser, winner) -> None:
-        self.draw_text("Perdiste "+loser, 55, RED, 150)
-        self.draw_text("Ganó el "+winner, 42, GOLD, 250)
+        self.draw_text("Perdiste jugador: "+loser, 55, RED, 150)
+        self.draw_text("Ganó el jugador: "+winner, 42, GOLD, 250)
         self.draw_text("Press ESC to Exit", 40, WHITE, 400)

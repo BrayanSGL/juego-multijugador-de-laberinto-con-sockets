@@ -29,22 +29,21 @@ message = ""
 
 
 def threaded_client(conn):
-    global current_id,id_winner, time_countdown
+    global current_id, id_winner, time_countdown
     id_client = current_id
     position_player = "0,0"
     current_id += 1
     config_client = f"{id_client}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     conn.send(str.encode(config_client))
-    nick_name = conn.recv(BUFFER_SIZE).decode("utf-8")
-    print(f"Nickname del cliente {id_client}: {nick_name}")
     while True:
         try:
-            data = conn.recv(BUFFER_SIZE)  # Recibe los 
+            data = conn.recv(BUFFER_SIZE)  # Recibe los
             reply = data.decode("utf-8")
             position_player = reply.split(":")[1]
             msg_client = reply.split(":")[2]
-            reply = f"{id_client}:{position_player}:{msg_client}"  # Decodifica los datos
-            
+            # Decodifica los datos
+            reply = f"{id_client}:{position_player}:{msg_client}"
+
             if not data:
                 print("Desconexión")
                 break
@@ -73,13 +72,12 @@ def threaded_client(conn):
                     id_winner = id_client
                     msg_client = "winner"
                     print(f"El jugador {id_client} ha encontrado un cofre")
-                    reply = f"{nick_name}:{id_winner}:{msg_client}"
-                    print(reply, type(reply))    
+                    reply = f"{id_client}:{id_winner}:{msg_client}"
                     conn.sendall(str.encode(reply))
                     id_winner = 0
                 elif id_winner != 0:
                     msg_client = "winner"
-                    reply = f"{nick_name}:{id_winner}:{msg_client}"
+                    reply = f"{id_client}:{id_winner}:{msg_client}"
                     conn.sendall(str.encode(reply))
                     id_winner = 0
                 else:
