@@ -1,4 +1,4 @@
-# Mi proyecto 
+# Juego multijugador de laberinto con sockets 
 
 Este proyecto es una aplicación básica de un modelo cliente servidor con sockets TCP. El video juego es un laberinto en el cual todos los clientes inician a la vez tras el aviso de uno de ellos. Al iniciar la partida el mapa es totalmente negro, pues el ideal es ir descucriendo el mapa. La aparición del jugador es aleatoria. Y para descubrir el mapa basta con tener en cuenta el sistema de movimiento.
 
