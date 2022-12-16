@@ -2,11 +2,12 @@ import socket
 
 
 class Network:
-    def __init__(self):
+    def __init__(self, my_nickname):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "192.168.1.146"
+        self.server = "192.168.1.93"
         self.port = 6751
         self.addr = (self.server, self.port)
+        self.my_nickname = my_nickname
         self.settings = self.connect()
         self.id = self.decode_settings()[0]
         self.free_coordinates = eval(self.decode_settings()[1])
@@ -16,6 +17,7 @@ class Network:
     def connect(self) -> str:
         try:
             self.client.connect(self.addr)
+            self.client.send(str.encode(self.my_nickname))
             return self.client.recv(2048).decode()
         except:
             pass

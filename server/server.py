@@ -35,6 +35,8 @@ def threaded_client(conn):
     current_id += 1
     config_client = f"{id_client}:{FREE_COORDINATES}:{WALL_COORDINATES}:{CHEST_COORDINATES}"
     conn.send(str.encode(config_client))
+    nick_name = conn.recv(BUFFER_SIZE).decode("utf-8")
+    print(f"Nickname del cliente {id_client}: {nick_name}")
     while True:
         try:
             data = conn.recv(BUFFER_SIZE)  # Recibe los 
@@ -71,12 +73,15 @@ def threaded_client(conn):
                     id_winner = id_client
                     msg_client = "winner"
                     print(f"El jugador {id_client} ha encontrado un cofre")
-                    reply = f"{id_client}:{id_winner}:{msg_client}"
+                    reply = f"{nick_name}:{id_winner}:{msg_client}"
+                    print(reply, type(reply))    
                     conn.sendall(str.encode(reply))
+                    id_winner = 0
                 elif id_winner != 0:
                     msg_client = "winner"
-                    reply = f"{id_client}:{id_winner}:{msg_client}"
+                    reply = f"{nick_name}:{id_winner}:{msg_client}"
                     conn.sendall(str.encode(reply))
+                    id_winner = 0
                 else:
                     conn.sendall(str.encode(reply))  # Envía los datos
         except:
